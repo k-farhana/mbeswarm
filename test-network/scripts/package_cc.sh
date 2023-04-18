@@ -1,12 +1,12 @@
 
-export CC_NAME=BondHolding
-export CC_NAME1=BuyOrder
-export CC_NAME2=CBDCwallet
-export CC_NAME3=MBEmarket
-export CC_NAME4=PurchaseLog
-export CC_NAME5=SellOrder
-export CC_NAME6=TokenHolding
-export CC_NAME7=Transactions
+# export CC_NAME=BondHolding
+# export CC_NAME1=BuyOrder
+# export C_NAME2=CBDCwallet
+# export CC_NAME3=MBEmarket
+# export CC_NAME4=PurchaseLog
+# export CC_NAME5=SellOrder
+# export CC_NAME6=TokenHolding
+# export CC_NAME7=Transactions
 
 
 infoln "Vendoring Go dependencies at ${CC_PATH}/${CC_NAME}"
