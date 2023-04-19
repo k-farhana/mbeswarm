@@ -1,7 +1,7 @@
-
+# export CHANNEL_NAME=mychannel
 # export CC_NAME=BondHolding
 # export CC_NAME1=BuyOrder
-# export C_NAME2=CBDCwallet
+# export CC_NAME2=CBDCwallet
 # export CC_NAME3=MBEmarket
 # export CC_NAME4=PurchaseLog
 # export CC_NAME5=SellOrder
