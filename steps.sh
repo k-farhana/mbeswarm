@@ -12,20 +12,24 @@ docker network create --driver=overlay  --attachable test
 ui0vjpkqh7m4ig7ekmgbn4sj8
 
 #copy the repo to all servers, go to test network folder
-cd repo/test-network
+cd mbeswarm/test-network
 
 #docker1:
 docker node ls
-docker node update --label-add name=manager <manager node id : here cfyvg4c9baasb81w1l124h8r5 >
-docker node inspect cfyvg4c9baasb81w1l124h8r5
+docker node update --label-add name=manager 
+#<manager node id : here cfyvg4c9baasb81w1l124h8r5 >
+docker node inspect
+# cfyvg4c9baasb81w1l124h8r5
 ##(it will return name as manager)
 
 ##similarly name worker1 and worker2 
 
-docker node update --label-add name=worker1 <worker id: p7flp9u42pwhl7o1jluml85a2 >
-docker node update --label-add name=worker2 <worker id: gdi5nuqqqopcd8f320p84vmqm >
+docker node update --label-add name=worker1 
+#<worker id: p7flp9u42pwhl7o1jluml85a2 >
+docker node update --label-add name=worker2 
+#<worker id: gdi5nuqqqopcd8f320p84vmqm >
 
-#docker1 : run containers (org1, org2, org3, orderer)
+#docker1 : run containers (ca certificates for org1, org2, org3, orderer)
 docker stack deploy -c docker/docker-compose-ca.yaml hlf
 
 # if error : no contaqiner running
@@ -82,7 +86,7 @@ scp -r farhana_kottal-v@10.201.1.4:/home/farhana_kottal-v/mbeswarm/test-network/
 ##copy the artifacts to worker nodes
 ##copy channel-artifacts and paste it to worker2&3
 #docker2&3: 
-
+scp -r farhana_kottal-v@10.201.1.4:/home/farhana_kottal-v/mbeswarm/test-network/channel-artifacts/ /home/farhana_kottal-v/mbeswarm/test-network
 
 #lecture #20 
 #bla bla bla explaining yaml files
@@ -108,16 +112,23 @@ docker stack deploy -c docker/docker-compose-cli.yaml hlf
 docker ps | grep cli
 ##e8f6b1ef4d95 //returns id of cli
 
+
+########### go to cli bash ############
 #docker1: --it interacting mode 
 docker exec -it e8f6b1ef4d95 bash
 export CHANNEL_NAME=mychannel
 echo $CHANNEL_NAME
 # mychannel
+
+
 ./scripts/create_app_channel.sh
 
 
 #23 Joining application channel(mychannel)
 # copy mychannel.block to worker1&2 from manager node
+#docker2&3:
+scp -r farhana_kottal-v@10.201.1.4:/home/farhana_kottal-v/mbeswarm/test-network/channel-artifacts/ /home/farhana_kottal-v/mbeswarm/test-network
+
 # in all nodes:
 peer channel join -b ./channel-artifacts/mychannel.block
 # on worker nodes, go to cli bash and check if the peer has joined any channel:
@@ -128,7 +139,7 @@ peer channel list
 peer channel join -b ./channel-artifacts/mychannel.block
 
 #24 Updating anchor peers:
-responsible for cross peer communication
+##responsible for cross peer communication
 
 #docker1:
 ./scripts/updateAnchorPeer.sh mychannel Org1MSP
@@ -142,7 +153,16 @@ responsible for cross peer communication
 
 #25 chaincode package and instllation
 #pass env variables(CC_NAME)
-export CC_NAME=basic
+export CHANNEL_NAME=mychannel
+export CC_NAME=BondHolding
+export CC_NAME1=BuyOrder
+export CC_NAME2=CBDCwallet
+export CC_NAME3=MBEmarket
+export CC_NAME4=PurchaseLog
+export CC_NAME5=SellOrder
+export CC_NAME6=TokenHolding
+export CC_NAME7=Transactions
+
 ./scripts/package_cc.sh
 
 
@@ -161,12 +181,20 @@ export CC_NAME=basic
 ./scripts/commit_cc.sh
 
 #docker2: //query 
-peer lifecycle chaincode querycommitted --channelID mychannel --name basic 
+peer lifecycle chaincode querycommitted --channelID mychannel --name $CC_NAME 
+peer lifecycle chaincode querycommitted --channelID mychannel --name $CC_NAME1 
+peer lifecycle chaincode querycommitted --channelID mychannel --name $CC_NAME2 
+peer lifecycle chaincode querycommitted --channelID mychannel --name $CC_NAME3 
+peer lifecycle chaincode querycommitted --channelID mychannel --name $CC_NAME4 
+peer lifecycle chaincode querycommitted --channelID mychannel --name $CC_NAME5 
+peer lifecycle chaincode querycommitted --channelID mychannel --name $CC_NAME6 
+peer lifecycle chaincode querycommitted --channelID mychannel --name $CC_NAME7
 
 
 #28 transaction invocation
 source ./scripts/envVar.sh
-parsePeerConnectionParameters 1 2 3 //since manager node has the certs of all the 3 organizations, then we can pass 1 2 3 as argument to this function
+parsePeerConnectionParameters 1 2 3 
+# //since manager node has the certs of all the 3 organizations, then we can pass 1 2 3 as argument to this function
 
 echo $PEER
 echo $PEER_CONN_PARMS
